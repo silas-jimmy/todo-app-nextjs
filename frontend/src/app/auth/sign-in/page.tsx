@@ -22,7 +22,7 @@ export default function SignIn() {
 
     validate: {
       email: isEmail("Invalid email"),
-      password: hasLength({ min: 8 }),
+      password: hasLength({ min: 8 }, "Min of 8 characters"),
     },
   });
 

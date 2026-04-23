@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { Lexend } from "next/font/google";
+import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from '@mantine/core';
+import { theme } from "./constants/theme";
+
+import '@mantine/core/styles.css';
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,17 +10,20 @@ export const metadata: Metadata = {
   description: "Track your todos with ease",
 };
 
-// App font family
-const lexend = Lexend();
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={lexend.className}>
-      <body>{children}</body>
+    <html lang="en" {...mantineHtmlProps}>
+      <head>
+        <ColorSchemeScript />
+      </head>
+
+      <body>
+        <MantineProvider theme={theme}>{children}</MantineProvider>
+      </body>
     </html>
   );
 }

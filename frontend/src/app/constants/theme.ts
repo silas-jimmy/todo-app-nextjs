@@ -7,10 +7,32 @@ const lexendSans = Lexend({
 });
 
 export const theme = createTheme({
-  /** Your theme override here */
   fontFamily: `${lexendSans.style.fontFamily}, ${DEFAULT_THEME.fontFamily}`,
-  primaryColor: "blue",
+  primaryColor: "orange",
   colors: {
-    'bright-pink': ['#F0BBDD', '#ED9BCF', '#EC7CC3', '#ED5DB8', '#F13EAF', '#F71FA7', '#FF00A1', '#E00890', '#C50E82', '#AD1374'],
+    orange: [
+      "#fff7e1",
+      "#ffedcb",
+      "#ffd99a",
+      "#ffc464",
+      "#ffb237",
+      "#ffa61b",
+      "#ff9d00",
+      "#e38c00",
+      "#cb7b00",
+      "#b06900",
+    ],
+    black: [
+      "#f5f5f5",
+      "#e7e7e7",
+      "#cdcdcd",
+      "#b2b2b2",
+      "#9a9a9a",
+      "#8b8b8b",
+      "#848484",
+      "#717171",
+      "#656565",
+      "#000000",
+    ],
   },
 });

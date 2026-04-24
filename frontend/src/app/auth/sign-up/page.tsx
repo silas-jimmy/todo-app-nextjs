@@ -8,8 +8,17 @@ import {
   PasswordInput,
   Button,
   Grid,
+  Text,
+  Anchor,
 } from "@mantine/core";
-import { hasLength, isEmail, useForm } from "@mantine/form";
+import {
+  hasLength,
+  isEmail,
+  isNotEmpty,
+  matchesField,
+  useForm,
+} from "@mantine/form";
+import Link from "next/link";
 
 export default function SignUp() {
   const form = useForm({
@@ -24,77 +33,98 @@ export default function SignUp() {
     },
 
     validate: {
-      first_name: hasLength({ min: 1 }, "Required!"),
-      last_name: hasLength({ min: 1 }, "Required!"),
-      username: hasLength({ min: 1 }, "Required!"),
+      first_name: isNotEmpty("First name is required!"),
+      last_name: isNotEmpty("Last name is required!"),
+      username: isNotEmpty("Username is required!"),
       email: isEmail("Invalid email!"),
-      password: hasLength({ min: 8 }, "Minimum of 8 characters"),
-      confirm: hasLength({ min: 8 }, "Minimum of 8 characters"),
+      password: hasLength(
+        { min: 8 },
+        "Password must be more than 7 characters!",
+      ),
+      confirm: matchesField("password", "Passwords do not match!"),
     },
   });
 
   return (
-    <Card withBorder>
-      <Title order={2} mb={16}>
-        Sign Up
-      </Title>
-
+    <Card withBorder w="450">
       <form onSubmit={form.onSubmit((values) => console.log(values))}>
-        <Flex direction="column" gap="lg">
-          <Grid columns={2}>
+        <Grid>
+          <Grid.Col span={12}>
+            <Title order={2} mb={16}>
+              Sign Up
+            </Title>
+          </Grid.Col>
+
+          <Grid.Col span={6}>
             <TextInput
               withAsterisk
               label="First name"
               key={form.key("first_name")}
               {...form.getInputProps("first_name")}
             />
+          </Grid.Col>
 
+          <Grid.Col span={6}>
             <TextInput
               withAsterisk
               label="Last name"
               key={form.key("last_name")}
               {...form.getInputProps("last_name")}
             />
-          </Grid>
+          </Grid.Col>
 
-          <Grid columns={2}>
+          <Grid.Col span={6}>
             <TextInput
               withAsterisk
               label="Username"
               key={form.key("username")}
               {...form.getInputProps("username")}
             />
+          </Grid.Col>
 
+          <Grid.Col span={6}>
             <TextInput
               withAsterisk
               label="Email address"
               key={form.key("email")}
               {...form.getInputProps("email")}
             />
-          </Grid>
+          </Grid.Col>
 
-          <Grid columns={2}>
+          <Grid.Col span={6}>
             <PasswordInput
               withAsterisk
-              w="100%"
               label="Password"
               key={form.key("password")}
               {...form.getInputProps("password")}
             />
+          </Grid.Col>
 
+          <Grid.Col span={6}>
             <PasswordInput
               withAsterisk
-              w="100%"
               label="Confirm password"
               key={form.key("confirm")}
               {...form.getInputProps("confirm")}
             />
-          </Grid>
+          </Grid.Col>
 
-          <Button fullWidth type="submit" variant="filled">
-            Create account
-          </Button>
-        </Flex>
+          <Grid.Col span={12}>
+            <Button fullWidth type="submit" variant="filled">
+              Create account
+            </Button>
+          </Grid.Col>
+
+          <Grid.Col span={12}>
+            <Flex align="center" justify="center" gap={3}>
+              <Text size="sm">Already have an account?</Text>
+
+              <Anchor component={Link} href="/auth/sign-in" size="sm">
+                Sign in
+              </Anchor>
+            </Flex>
+          </Grid.Col>
+        </Grid>
       </form>
     </Card>
   );

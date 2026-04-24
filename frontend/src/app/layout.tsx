@@ -3,6 +3,7 @@ import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from '@mantine/c
 import { theme } from "./constants/theme";
 
 import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css';
 import "./globals.css";
 
 export const metadata: Metadata = {

@@ -119,7 +119,7 @@ export default function SignUp() {
             <Flex align="center" justify="center" gap={3}>
               <Text size="sm">Already have an account?</Text>
 
-              <Anchor component={Link} href="/auth/sign-in" size="sm">
+              <Anchor component={Link} href="/sign-in" size="sm">
                 Sign in
               </Anchor>
             </Flex>

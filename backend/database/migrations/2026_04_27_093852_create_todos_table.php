@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,9 +19,10 @@ return new class extends Migration
             $table->string('description');
             $table->date('date');
             $table->time('time');
-            $table->boolean('completed');
+            $table->boolean('completed')->default(false);
             $table->timestamps();
             $table->foreignIdFor(Category::class)->constrained();
+            $table->foreignIdFor(User::class)->constrained();
         });
     }
 

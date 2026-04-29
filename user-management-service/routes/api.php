@@ -4,12 +4,16 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::controller(AuthController::class)->group(function () {
-    Route::post('register', 'register')->name('register');
+Route::prefix('users')->group(function () {
+    Route::controller(AuthController::class)->group(function () {
+        Route::post('/register', 'register')->name('register');
 
-    Route::post('/login', 'login')->name('login');
+        Route::post('/login', 'login')->name('login');
+    });
+
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/user', function (Request $request) {
+            return $request->user();
+        });
+    });
 });
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:api');

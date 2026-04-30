@@ -23,7 +23,7 @@ class TodoController extends Controller
      */
     public function store(Request $request)
     {
-        // Log::info($request);
+        // Log::info($request->attributes->get('user_id'));
 
         return response()->json([
             'message' => 'Add todo'

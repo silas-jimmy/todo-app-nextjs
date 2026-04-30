@@ -20,7 +20,7 @@ return new class extends Migration
             $table->time('time');
             $table->boolean('completed')->default(false);
             $table->timestamps();
-            $table->foreignIdFor(Category::class)->constrained();
+            $table->foreignIdFor(Category::class)->nullable()->constrained();
             $table->integer('user_id');
         });
     }

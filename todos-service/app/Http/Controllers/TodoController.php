@@ -3,11 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Todo;
+use App\Services\TodoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class TodoController extends Controller
 {
+    /**
+     * Injects service classes to the controller.
+     * 
+     * @return void
+     */
+    public function __construct(
+        protected TodoService $todoService,
+    ) {}
+
     /**
      * Display a listing of the resource.
      */

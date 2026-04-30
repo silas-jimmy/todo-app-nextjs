@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('label');
             $table->string('value');
-            $table->string('description');
+            $table->string('description')->nullable();
+            $table->integer('user_id');
             $table->timestamps();
         });
     }

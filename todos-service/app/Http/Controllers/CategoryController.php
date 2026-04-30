@@ -2,58 +2,149 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
+use App\Services\CategoryService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Inject service classes to the controller.
+     * 
+     * @return void
      */
-    public function index()
+    public function __construct(
+        protected CategoryService $categoryService,
+    ) {}
+
+    /**
+     * Retrieve all todo categories of the current user.
+     * 
+     * @param Request $request user's request.
+     * 
+     * @return JsonResponse JSON object containing the action response and status code.
+     */
+    public function index(Request $request): JsonResponse
     {
-        return response()->json([
-            'message' => 'Get all categories'
-        ]);
+        $user_id = $request->attributes->get('user_id');
+
+        $response = $this->categoryService->getAll($user_id);
+
+        return response()->json($response, $response['code']);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create and save a new todo category.
+     * 
+     * @param Request $request user's request.
+     * 
+     * @return JsonResponse JSON object containing the action response and status code.
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        return response()->json([
-            'message' => 'Add category'
+        $validator = Validator::make($request->all(), [
+            'label' => 'bail|string|required|unique:categories|max:15',
+            'value' => 'bail|string|required|unique:categories|max:15',
+            'description' => 'bail|string|max:255'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'code' => 422,
+                'message' => 'Failed to create todo category!',
+                'data' => $validator->errors(),
+            ], 422);
+        }
+
+        $user_id = $request->attributes->get('user_id');
+
+        $response = $this->categoryService->create($user_id, $request->all());
+
+        return response()->json($response, $response['code']);
     }
 
     /**
-     * Display the specified resource.
+     * Retrieve a todo category by the specified ID.
+     * 
+     * @param Request $request user's request.
+     * @param int $id the category ID.
+     * 
+     * @return JsonResponse JSON object containing the action response and status code.
      */
-    public function show(Category $category)
+    public function show(Request $request, int $id): JsonResponse
     {
-        return response()->json([
-            'message' => 'Get category'
-        ]);
+        $user_id = $request->attributes->get('user_id');
+
+        $response = $this->categoryService->getOne($user_id, $id);
+
+        return response()->json($response, $response['code']);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the todo category by the specified ID.
+     * 
+     * @param Request $request user's request.
+     * @param int $id the category ID.
+     * 
+     * @return JsonResponse JSON object containing the action response and status code.
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, int $id): JsonResponse
     {
-        return response()->json([
-            'message' => 'Update category'
-        ]);
+        $user_id = $request->attributes->get('user_id');
+
+        $response = $this->categoryService->getOne($user_id, $id);
+
+        if ($response['success']) {
+            $category = $response['data'];
+
+            $validator = Validator::make($request->all(), [
+                'label' => ['bail', 'string', 'required', Rule::unique('categories')->ignore($category->id), 'max:15'],
+                'value' => ['bail', 'string', 'required', Rule::unique('categories')->ignore($category->id), 'max:15'],
+                'description' => 'bail|string|max:255'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 422,
+                    'message' => 'Failed to update todo category!',
+                    'data' => $validator->errors(),
+                ], 422);
+            }
+
+            $response = $this->categoryService->update($category, $request->all());
+
+            return response()->json($response, $response['code']);
+        }
+
+        return response()->json($response, $response['code']);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete a todo category by the specified ID from the database.
+     * 
+     * @param Request $request user's request.
+     * @param int $id the category ID.
+     * 
+     * @return JsonResponse JSON object containing the action response and status code.
      */
-    public function destroy(Category $category)
+    public function destroy(Request $request, int $id): JsonResponse
     {
-        return response()->json([
-            'message' => 'Delete category'
-        ]);
+        $user_id = $request->attributes->get('user_id');
+
+        $response = $this->categoryService->getOne($user_id, $id);
+
+        if ($response['success']) {
+            $category = $response['data'];
+
+            $response = $this->categoryService->delete($category);
+
+            return response()->json($response, $response['code']);
+        }
+
+        return response()->json($response, $response['code']);
     }
 }

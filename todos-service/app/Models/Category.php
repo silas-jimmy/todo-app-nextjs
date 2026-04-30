@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['label', 'value', 'description'])]
+#[Fillable(['label', 'value', 'description', 'user_id'])]
 class Category extends Model
 {
     /**

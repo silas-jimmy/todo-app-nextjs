@@ -12,7 +12,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            'message' => 'Get all categories'
+        ]);
     }
 
     /**
@@ -20,7 +22,9 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return response()->json([
+            'message' => 'Add category'
+        ]);
     }
 
     /**
@@ -28,7 +32,9 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        //
+        return response()->json([
+            'message' => 'Get category'
+        ]);
     }
 
     /**
@@ -36,7 +42,9 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+        return response()->json([
+            'message' => 'Update category'
+        ]);
     }
 
     /**
@@ -44,6 +52,8 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        return response()->json([
+            'message' => 'Delete category'
+        ]);
     }
 }

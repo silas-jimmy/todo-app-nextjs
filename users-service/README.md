@@ -6,6 +6,4 @@ The backend service that handles user management.
 
 ## Development
 
-### 1. Local
-
-### 2. Production
+### Production

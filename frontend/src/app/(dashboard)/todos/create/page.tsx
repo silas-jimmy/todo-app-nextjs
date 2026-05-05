@@ -4,25 +4,18 @@ import { TodoCategory } from "@/app/types/todo";
 import {
   ActionIcon,
   Button,
-  CheckIcon,
-  CloseButton,
-  Combobox,
   Grid,
   Group,
-  Input,
-  InputBase,
   Select,
   SelectProps,
-  Stack,
   Textarea,
   TextInput,
-  useCombobox,
 } from "@mantine/core";
-import { Calendar, DatePicker, TimeInput } from "@mantine/dates";
+import { DatePicker, TimeInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { ClockIcon } from "@phosphor-icons/react";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 export default function CreateTodo() {
   const ref = useRef<HTMLInputElement>(null);

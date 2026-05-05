@@ -13,9 +13,14 @@ import {
   Title,
 } from "@mantine/core";
 import { hasLength, isEmail, useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function SignIn() {
+  const router = useRouter();
+  const [loginButtonLoading, loginButtonHandlers] = useDisclosure(false);
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -33,9 +38,62 @@ export default function SignIn() {
     },
   });
 
+  /**
+   * Handles the user login logic.
+   */
+  async function handleLogin(data: any) {
+    loginButtonHandlers.open();
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_USERS_SERVICE_URL}/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      },
+    );
+
+    loginButtonHandlers.close();
+
+    const result = await response.json();
+
+    if (response.ok) {
+      notifications.show({
+        title: "Success",
+        message: "Login successful.",
+        color: "green",
+        position: "top-right",
+        autoClose: 3000,
+      });
+
+      const token = result.data;
+
+      localStorage.setItem("token", token);
+
+      router.push("/todos");
+    } else {
+      const errorMessages = Object.entries(result.data).map((error) => {
+        const field = error[0];
+        const message = error[1] as string[];
+
+        return `${field.charAt(0).toUpperCase() + field.slice(1)}: ${message[0]}`;
+      });
+
+      notifications.show({
+        title: result.message,
+        message: errorMessages.join("\n"),
+        color: "red",
+        position: "top-right",
+        autoClose: 4000,
+      });
+    }
+  }
+
   return (
     <Card withBorder w="350">
-      <form onSubmit={form.onSubmit((values) => console.log(values))}>
+      <form onSubmit={form.onSubmit((values) => handleLogin(values))}>
         <Grid>
           <Grid.Col span={12}>
             <Title order={2}>Sign In</Title>
@@ -74,7 +132,13 @@ export default function SignIn() {
           </Grid.Col>
 
           <Grid.Col span={12}>
-            <Button fullWidth type="submit" variant="filled">
+            <Button
+              fullWidth
+              loading={loginButtonLoading}
+              loaderProps={{ type: "dots" }}
+              type="submit"
+              variant="filled"
+            >
               Login
             </Button>
           </Grid.Col>

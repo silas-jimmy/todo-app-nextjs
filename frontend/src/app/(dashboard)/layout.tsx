@@ -9,7 +9,7 @@ import {
   Indicator,
   NavLink,
   TextInput,
-  Text,
+  Title,
   Button,
   Stack,
 } from "@mantine/core";
@@ -96,7 +96,7 @@ export default function DashboardLayout({
                 size={32}
               />
 
-              <Text>Logo</Text>
+              <Title order={4}>TodoApp</Title>
             </Group>
           </Group>
         </AppShell.Section>

@@ -10,7 +10,7 @@ export type Todo = {
     completed: boolean
     created_at: Date
     updated_at: Date
-    category: TodoCategory
+    category_id: number
 }
 
 /**

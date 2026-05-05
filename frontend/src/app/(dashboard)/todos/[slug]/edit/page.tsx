@@ -16,9 +16,8 @@ import {
 import { DatePicker, TimeInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { ClockIcon } from "@phosphor-icons/react";
-import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 export default function EditTodo() {
   const ref = useRef<HTMLInputElement>(null);
@@ -72,6 +71,7 @@ export default function EditTodo() {
   );
 
   const params = useParams();
+  const router = useRouter();
   const [data, setData] = useState<Todo | null>(null);
   const [isDataLoading, setDataLoading] = useState(true);
 
@@ -140,7 +140,7 @@ export default function EditTodo() {
 
               <Grid.Col span={12}>
                 <Group justify="flex-end">
-                  <Button component={Link} href="/todos" variant="subtle">
+                  <Button variant="subtle" onClick={() => router.back()}>
                     Cancel
                   </Button>
 

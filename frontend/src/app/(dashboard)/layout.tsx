@@ -146,7 +146,7 @@ export default function DashboardLayout({
             </Stack>
 
             <Button
-              variant="default"
+              variant="filled"
               justify="start"
               leftSection={<SignOutIcon size={18} />}
             >

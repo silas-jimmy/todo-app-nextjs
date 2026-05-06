@@ -60,14 +60,6 @@ export default function SignIn() {
     const result = await response.json();
 
     if (response.ok) {
-      notifications.show({
-        title: "Success",
-        message: "Login successful.",
-        color: "green",
-        position: "top-right",
-        autoClose: 3000,
-      });
-
       const token = result.data;
 
       localStorage.setItem("token", token);
@@ -89,6 +81,14 @@ export default function SignIn() {
         autoClose: 4000,
       });
     }
+
+    notifications.show({
+      title: response.ok ? "Success" : "Error",
+      message: response.ok ? "Login successful." : result.message,
+      color: response.ok ? "green" : "red",
+      position: "top-right",
+      autoClose: response.ok ? 3000 : 5000,
+    });
   }
 
   return (

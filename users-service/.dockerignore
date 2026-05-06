@@ -1,8 +1,0 @@
-# Environment variables file
-.env
-
-# Composer modules
-vendor/
-
-# Node modules
-node_modules/

@@ -19,8 +19,14 @@ import {
   useForm,
 } from "@mantine/form";
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { notifications } from "@mantine/notifications";
 
 export default function SignUp() {
+  const router = useRouter();
+  const [registerButtonLoading, setRegisterButtonLoading] = useState(false);
+
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -29,7 +35,7 @@ export default function SignUp() {
       username: "",
       email: "",
       password: "",
-      confirm: "",
+      password_confirmation: "",
     },
 
     validate: {
@@ -41,13 +47,63 @@ export default function SignUp() {
         { min: 8 },
         "Password must be more than 7 characters!",
       ),
-      confirm: matchesField("password", "Passwords do not match!"),
+      password_confirmation: matchesField("password", "Passwords do not match!"),
     },
   });
 
+  /**
+   * Handles the user registration logic.
+   * 
+   * @param data user's data to register with.
+   */
+  async function handleSignUp(data: any) {
+    setRegisterButtonLoading(true);
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_USERS_SERVICE_URL}/register`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      },
+    );
+
+    setRegisterButtonLoading(false);
+
+    const results = await response.json();
+    let errorMessages: string[] = [];
+
+    if (response.ok) {
+      router.push("/sign-in");
+    } else {
+      console.log(results.data);
+
+      errorMessages = Object.entries(results.data).map((error) => {
+        const field = error[0];
+        const message = error[1] as string[];
+
+        return `${field.charAt(0).toUpperCase() + field.slice(1)}: ${message[0]}`;
+      });
+    }
+
+    notifications.show({
+      title: response.ok ? "Success" : "Error",
+      message: response.ok
+        ? "Account created successfully."
+        : errorMessages.length > 1
+          ? errorMessages.join("\n")
+          : results.message,
+      color: response.ok ? "green" : "red",
+      position: "top-right",
+      autoClose: response.ok ? 3000 : 5000,
+    });
+  }
+
   return (
     <Card withBorder w="450">
-      <form onSubmit={form.onSubmit((values) => console.log(values))}>
+      <form onSubmit={form.onSubmit((values) => handleSignUp(values))}>
         <Grid>
           <Grid.Col span={12}>
             <Title order={2} mb={16}>
@@ -104,13 +160,19 @@ export default function SignUp() {
             <PasswordInput
               withAsterisk
               label="Confirm password"
-              key={form.key("confirm")}
-              {...form.getInputProps("confirm")}
+              key={form.key("password_confirmation")}
+              {...form.getInputProps("password_confirmation")}
             />
           </Grid.Col>
 
           <Grid.Col span={12}>
-            <Button fullWidth type="submit" variant="filled">
+            <Button
+              fullWidth
+              loading={registerButtonLoading}
+              loaderProps={{ type: 'dots' }}
+              type="submit"
+              variant="filled"
+            >
               Create account
             </Button>
           </Grid.Col>

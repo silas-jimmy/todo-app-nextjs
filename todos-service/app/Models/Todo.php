@@ -17,6 +17,8 @@ class Todo extends Model
     protected function casts(): array
     {
         return [
+            'date' => 'datetime:Y-m-d',
+            'time' => 'datetime:H:i',
             'completed' => 'boolean',
         ];
     }

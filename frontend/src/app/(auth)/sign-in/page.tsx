@@ -17,6 +17,10 @@ import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import {
+  USERS_SERVICE_API_ENDPOINT,
+  USERS_SERVICE_AUTH_ENDPOINT,
+} from "@/lib/utils/constants";
 
 export default function SignIn() {
   const router = useRouter();
@@ -44,29 +48,62 @@ export default function SignIn() {
   async function handleLogin(data: any) {
     loginButtonHandlers.open();
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_USERS_SERVICE_URL}/login`,
-      {
+    const loginResponse = await fetch(`${USERS_SERVICE_API_ENDPOINT}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const loginResult = await loginResponse.json();
+
+    if (loginResponse.ok) {
+      const tokenResponse = await fetch(`${USERS_SERVICE_AUTH_ENDPOINT}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
-      },
-    );
+        body: JSON.stringify({
+          grant_type: "password",
+          client_id: `${process.env.NEXT_PUBLIC_APP_CLIENT_ID}`,
+          client_secret: `${process.env.NEXT_PUBLIC_APP_CLIENT_SECRET}`,
+          username: data.email,
+          password: data.password,
+          scope: "",
+        }),
+      });
 
-    loginButtonHandlers.close();
+      loginButtonHandlers.close();
 
-    const result = await response.json();
+      const tokenResult = await tokenResponse.json();
 
-    if (response.ok) {
-      const token = result.data;
+      if (tokenResponse.ok) {
+        localStorage.setItem("access_token", tokenResult.access_token);
+        localStorage.setItem("refresh_token", tokenResult.refresh_token);
 
-      localStorage.setItem("token", token);
+        notifications.show({
+          title: "Success",
+          message: "Login successful.",
+          color: "green",
+          position: "top-right",
+          autoClose: 3000,
+        });
 
-      router.push("/todos");
+        router.push("/todos");
+      } else {
+        notifications.show({
+          title: "Error",
+          message: tokenResult.error_description,
+          color: "red",
+          position: "top-right",
+          autoClose: 4000,
+        });
+      }
     } else {
-      const errorMessages = Object.entries(result.data).map((error) => {
+      loginButtonHandlers.close();
+
+      const errorMessages = Object.entries(loginResult.data).map((error) => {
         const field = error[0];
         const message = error[1] as string[];
 
@@ -74,21 +111,13 @@ export default function SignIn() {
       });
 
       notifications.show({
-        title: result.message,
+        title: "Error",
         message: errorMessages.join("\n"),
         color: "red",
         position: "top-right",
         autoClose: 4000,
       });
     }
-
-    notifications.show({
-      title: response.ok ? "Success" : "Error",
-      message: response.ok ? "Login successful." : result.message,
-      color: response.ok ? "green" : "red",
-      position: "top-right",
-      autoClose: response.ok ? 3000 : 5000,
-    });
   }
 
   return (

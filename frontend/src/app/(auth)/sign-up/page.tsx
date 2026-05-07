@@ -22,6 +22,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { notifications } from "@mantine/notifications";
+import { USERS_SERVICE_API_ENDPOINT } from "@/lib/utils/constants";
 
 export default function SignUp() {
   const router = useRouter();
@@ -60,7 +61,7 @@ export default function SignUp() {
     setRegisterButtonLoading(true);
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_USERS_SERVICE_URL}/register`,
+      `${USERS_SERVICE_API_ENDPOINT}/register`,
       {
         method: "POST",
         headers: {

@@ -104,7 +104,7 @@ export default function DashboardLayout({
         <AppShell.Section h="100%">
           <Stack py={6} px={12} justify="space-between" h="100%">
             <Stack p={6} gap={2} className="bg-white rounded-xl">
-              <NavLink
+              {/* <NavLink
                 component={Link}
                 className="rounded-xl"
                 href="/home"
@@ -112,7 +112,7 @@ export default function DashboardLayout({
                 variant="subtle"
                 active={pathName === '/home'}
                 leftSection={<HouseIcon size={18} />}
-              />
+              /> */}
 
               <NavLink
                 component={Link}
@@ -124,7 +124,7 @@ export default function DashboardLayout({
                 leftSection={<ListNumbersIcon size={18} />}
               />
 
-              <NavLink
+              {/* <NavLink
                 component={Link}
                 className="rounded-xl"
                 href="/profile"
@@ -142,7 +142,7 @@ export default function DashboardLayout({
                 variant="subtle"
                 active={pathName === '/settings'}
                 leftSection={<GearSixIcon size={18} />}
-              />
+              /> */}
             </Stack>
 
             <Button

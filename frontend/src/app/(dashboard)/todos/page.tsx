@@ -24,6 +24,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { Todo } from "@/app/types/todo";
 import { notifications } from "@mantine/notifications";
+import { TODOS_SERVICE_API_ENDPOINT } from "@/lib/utils/constants";
 
 export default function Todos() {
   const [showDeleteModal, handleDeleteModal] = useDisclosure(false);
@@ -46,43 +47,57 @@ export default function Todos() {
     handleDeleteModal.close();
   }
 
-  async function deleteTodo() {
+  function deleteTodo() {
     setDeleteTodoConfirmLoading(true);
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_TODOS_SERVICE_URL}/todo/${selectedTodo?.id}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      },
-    );
-
-    setDeleteTodoConfirmLoading(false);
-
-    setSelectedTodo(null);
-
-    handleDeleteModal.close();
-
-    const result = await response.json();
-
-    notifications.show({
-      title: "Delete todo",
-      message: result.message,
-      color: response.ok ? "green" : "red",
-      position: "top-right",
-      autoClose: 3000,
-    });
-  }
-
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_TODOS_SERVICE_URL}/todo`, {
-      method: "GET",
+    fetch(`${TODOS_SERVICE_API_ENDPOINT}/todo/${selectedTodo?.id}`, {
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        setDeleteTodoConfirmLoading(false);
+
+        setSelectedTodo(null);
+
+        handleDeleteModal.close();
+
+        notifications.show({
+          title: "Success",
+          message: result.message,
+          color: result.success ? "green" : "red",
+          position: "top-right",
+          autoClose: 3000,
+        });
+      })
+      .finally(async () => {
+        setTableLoading(true);
+
+        const response = await fetch(`${TODOS_SERVICE_API_ENDPOINT}/todo`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        });
+
+        const result = await response.json();
+
+        setTableData(result.data);
+
+        setTableLoading(false);
+      });
+  }
+
+  useEffect(() => {
+    fetch(`${TODOS_SERVICE_API_ENDPOINT}/todo`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
       },
     })
       .then((response) => response.json())
@@ -147,48 +162,56 @@ export default function Todos() {
             </Table.Thead>
 
             <Table.Tbody>
-              {tableData.map((todo: any) => (
-                <Table.Tr key={todo.id}>
-                  <Table.Td>{todo.title}</Table.Td>
-                  <Table.Td>{todo.date}</Table.Td>
-                  <Table.Td>{todo.time}</Table.Td>
-                  <Table.Td>
-                    <Menu position="bottom-end">
-                      <Menu.Target>
-                        <ActionIcon variant="default">
-                          <DotsThreeCircleVerticalIcon />
-                        </ActionIcon>
-                      </Menu.Target>
-
-                      <Menu.Dropdown>
-                        <Menu.Item
-                          component={Link}
-                          href={`/todos/${todo.id}/view`}
-                          leftSection={<EyeIcon size={14} />}
-                        >
-                          View
-                        </Menu.Item>
-
-                        <Menu.Item
-                          component={Link}
-                          href={`/todos/${todo.id}/edit`}
-                          leftSection={<PencilSimpleLineIcon size={14} />}
-                        >
-                          Edit
-                        </Menu.Item>
-
-                        <Menu.Item
-                          leftSection={<TrashIcon size={14} />}
-                          color="red"
-                          onClick={() => openDeleteTodoModal(todo)}
-                        >
-                          Delete
-                        </Menu.Item>
-                      </Menu.Dropdown>
-                    </Menu>
+              {tableData.length < 1 ? (
+                <Table.Tr>
+                  <Table.Td colSpan={100}>
+                    <div className="text-gray-500 text-center font-light py-2">No todos available</div>
                   </Table.Td>
                 </Table.Tr>
-              ))}
+              ) : (
+                tableData.map((todo: any) => (
+                  <Table.Tr key={todo.id}>
+                    <Table.Td>{todo.title}</Table.Td>
+                    <Table.Td>{todo.date}</Table.Td>
+                    <Table.Td>{todo.time}</Table.Td>
+                    <Table.Td>
+                      <Menu position="bottom-end">
+                        <Menu.Target>
+                          <ActionIcon variant="default">
+                            <DotsThreeCircleVerticalIcon />
+                          </ActionIcon>
+                        </Menu.Target>
+
+                        <Menu.Dropdown>
+                          <Menu.Item
+                            component={Link}
+                            href={`/todos/${todo.id}/view`}
+                            leftSection={<EyeIcon size={14} />}
+                          >
+                            View
+                          </Menu.Item>
+
+                          <Menu.Item
+                            component={Link}
+                            href={`/todos/${todo.id}/edit`}
+                            leftSection={<PencilSimpleLineIcon size={14} />}
+                          >
+                            Edit
+                          </Menu.Item>
+
+                          <Menu.Item
+                            leftSection={<TrashIcon size={14} />}
+                            color="red"
+                            onClick={() => openDeleteTodoModal(todo)}
+                          >
+                            Delete
+                          </Menu.Item>
+                        </Menu.Dropdown>
+                      </Menu>
+                    </Table.Td>
+                  </Table.Tr>
+                ))
+              )}
             </Table.Tbody>
           </Table>
         </Box>
